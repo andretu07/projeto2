@@ -3,6 +3,6 @@ Primeiro trabalho de redes
 
 Divisão do trabalho:
 
-Arieh: daemon
+Arieh: daemon 
 Cristian: backend
 Camilo: webserver
