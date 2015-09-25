@@ -26,8 +26,16 @@ def cleanStr(stringUser):
 	clearStr = string.replace(';',' ')
 	return clearStr
 
+def threadfunction(connectionSocket):
+	sentence = connectionSocket.recv(10000)
+	strlimpa = cleanStr(sentence.decode())
+	comandoexecutado = executestr(strlimpa)
+	connectionSocket.send(comandoexecutado)
+	connectionSocket.close()
+
 #main
 from socket import *
+import threading
 import subprocess
 
 serverPort = 12000
@@ -37,8 +45,7 @@ serverSocket.listen(1)
 print ("The server is ready to receive")
 while 1:
 	connectionSocket, addr = serverSocket.accept()
-	sentence = connectionSocket.recv(10000)
-	strlimpa = cleanStr(sentence.decode())
-	comandoexecutado = executestr(strlimpa)
-	connectionSocket.send(comandoexecutado)
-	connectionSocket.close()
+	#inicio da thread
+	t = threading.Thread(target=threadfunction, args=(connectionSocket, ))
+	t.daemon = True
+	t.start()
