@@ -30,7 +30,7 @@ def threadfunction(connectionSocket):
 	sentence = connectionSocket.recv(10000)
 	strlimpa = cleanStr(sentence.decode())
 	comandoexecutado = executestr(strlimpa)
-	msgfinal = "RESPOND " + comandoexecutado.decode()
+	msgfinal = "RESPONSE " + comandoexecutado.decode()
 	connectionSocket.send(msgfinal.encode())
 	connectionSocket.close()
 
