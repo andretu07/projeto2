@@ -1,18 +1,25 @@
+operacao = ""
+
 def executestr(checkstr):
 	if (checkstr[0:7] == "REQUEST"):
-		comando = checkstr.split()
-		print (comando)
-		comando.pop(0)
+		global operacao
+		comando = checkstr[8:]
+		comando = comando.replace(' ',' -')
+		comando = comando.split()
 		if (comando[0] == "1"):
+			operacao = "1 "
 			comando.pop(0)
 			comando.insert(0,"ps")
 		elif (comando[0] == "2"):
+			operacao = "2 "
 			comando.pop(0)
 			comando.insert(0,"df")
 		elif (comando[0] == "3"):
+			operacao = "3 "
 			comando.pop(0)
 			comando.insert(0,"finger")
 		elif (comando[0] == "4"):
+			operacao = "4 "
 			comando.pop(0)
 			comando.insert(0,"uptime")
 		saida = subprocess.check_output(comando)
@@ -29,8 +36,9 @@ def cleanStr(stringUser):
 def threadfunction(connectionSocket):
 	sentence = connectionSocket.recv(10000)
 	strlimpa = cleanStr(sentence.decode())
+	strlimpa
 	comandoexecutado = executestr(strlimpa)
-	msgfinal = "RESPONSE " + comandoexecutado.decode()
+	msgfinal = "RESPOND " + operacao + comandoexecutado.decode()
 	connectionSocket.send(msgfinal.encode())
 	connectionSocket.close()
 
