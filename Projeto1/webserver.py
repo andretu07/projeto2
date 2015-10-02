@@ -53,10 +53,10 @@ def create_backend_message(nr_PCs):
 		for j in range(1,5):
 			key = getName(i) + "_cmd" + str(j)
 			if(key in form):
-				message = message + getCommand(j)
+				message = message + getCommand(j) + " "
 				key = getName(i) + "_cmd" + str(j) + "_args"
 				if(key in form):
-					message = message + form.getvalue(key)
+					message = message + form.getvalue(key) + " "
 		message = message + "\n"
 
 	print(message)
@@ -88,6 +88,6 @@ else:
 			</form>""")
 
 #DEBUG - CHAVES DEFINIDAS
-#print (form_is_defined)
+print (form_is_defined)
 
 
