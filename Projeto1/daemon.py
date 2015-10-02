@@ -28,25 +28,28 @@ def parse_and_execute(sentence):
 			operacao = "4 "
 			comando = comando.replace("4","uptime",1)
 		else:
-			operacao = "0"
 			saidaValida = False
 
 		if(saidaValida):
 			comando = cleanStr(comando)
 			comando = comando.replace(' ',' -',1)
 			comando = comando.split(None, 2)
-			print "DAEMON processed " + comando[0] + " " + comando[1]
+			if(len(comando) == 2):
+				print "DAEMON processed " + comando[0] + " " + comando[1]
+			else:
+				print "DAEMON processed " + comando[0]
 			try:
 				saida = subprocess.check_output(comando[0:2])
 			except subprocess.CalledProcessError:
 				operacao = "0"
-				return ''
+				return '\n'
 			return saida
 		else:
-			return ''
+			operacao = "0"
+			return '\n'
 	else:
 		operacao = "0"
-		return ''
+		return '\n'
 
 def cleanStr(stringUser):
 	erro = len(stringUser)
