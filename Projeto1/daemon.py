@@ -1,3 +1,7 @@
+from socket import *
+import threading
+import subprocess
+
 operacao = ""
 
 '''
@@ -32,7 +36,11 @@ def parse_and_execute(sentence):
 			comando = comando.replace(' ',' -',1)
 			comando = comando.split(None, 2)
 			print "DAEMON processed " + comando[0] + " " + comando[1]
-			saida = subprocess.check_output(comando[0:2])
+			try:
+				saida = subprocess.check_output(comando[0:2])
+			except subprocess.CalledProcessError:
+				operacao = "0"
+				return ''
 			return saida
 		else:
 			return ''
@@ -65,18 +73,15 @@ def threadfunction(connectionSocket):
 	connectionSocket.settimeout(60)
 	try:
 		while 1:
-			sentence = connectionSocket.recv(10000)
+			sentence = connectionSocket.recv(4096)
 			print "Daemon received " + sentence
 			comando_executado = parse_and_execute(sentence)
 			msgfinal = "RESPOND " + operacao + comando_executado.decode()
 			connectionSocket.send(msgfinal.encode())
-	except timeout:
+	except error, timeout:
 		connectionSocket.close()
 
 #main
-from socket import *
-import threading
-import subprocess
 
 daemonPort = 12000
 daemonSocket = socket(AF_INET,SOCK_STREAM)
