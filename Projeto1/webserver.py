@@ -41,6 +41,27 @@ def getSubForm(i):
 	html = html.replace('PC_NAME',getName(i))
 	return html
 
+def getCommand(i):
+	return str(i)
+
+def create_backend_message(nr_PCs):
+	global form
+	message = ""
+
+	for i in range(1,nr_PCs+1):
+		message = message + getName(i) + " ";
+		for j in range(1,5):
+			key = getName(i) + "_cmd" + str(j)
+			if(key in form):
+				message = message + getCommand(j)
+				key = getName(i) + "_cmd" + str(j) + "_args"
+				if(key in form):
+					message = message + form.getvalue(key)
+		message = message + "\n"
+
+	print(message)
+
+
 init_HTML_headers()
 
 #PERGUNTAR AO BACKEND QUANTOS COMPUTADORES ESTAO LIGADOS
@@ -53,20 +74,20 @@ if not form_is_defined or len(form_is_defined) == 3:
 	init_HTML_head_tag(0)
 	print ("""<p>Selecione os comandos que deseja e digite seus respectivos argumentos para cada computador</p>
 			<form name="commands" action="webserver.py" method="post">""")
-	for i in range(0,nr_PCs):
-		print (getSubForm(i+1))
+	for i in range(1,nr_PCs+1):
+		print (getSubForm(i))
 	print ("""<button type="reset" value="Reset">Limpar tudo</button>
 			<button type="submit" value="Submit">Enviar</button>
 			</form>""")
 else:
 	init_HTML_head_tag(1)
-	#ENVIAR COMANDOS AS MAQUINAS LIGADAS
+	create_backend_message(nr_PCs)
 	print ("""<br/>
 			<form name="commands" action="webserver.py" method="post">
 			<button type="submit" value="Submit">Voltar ao Inicio</button>
 			</form>""")
 
 #DEBUG - CHAVES DEFINIDAS
-print (form_is_defined)
+#print (form_is_defined)
 
 
