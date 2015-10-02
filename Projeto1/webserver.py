@@ -1,8 +1,21 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import cgi
 import string
 import html.parser
+
+def init_HTML_headers():
+	print ("Content-type: text/html\n\n")
+
+def init_HTML_head_tag(cond):
+	print ("<head>")
+	if(cond == 0):
+		print ("<title>Trabalho 1 de Redes</title>")
+	elif(cond == 1):
+		print ("<title>Resultado de todos os Daemons</title>")
+	else:
+		print ("<title>Página inválida</title>")
+	print ("</head>")
 
 def getName(i):
 	return "PC" + str(i);
@@ -28,7 +41,7 @@ def getSubForm(i):
 	html = html.replace('PC_NAME',getName(i))
 	return html
 
-print ("Content-type: text/html\n\n")
+init_HTML_headers()
 
 #PERGUNTAR AO BACKEND QUANTOS COMPUTADORES ESTAO LIGADOS
 nr_PCs = 3
@@ -37,7 +50,7 @@ nr_PCs = 3
 form = cgi.FieldStorage()
 form_is_defined = form.keys()
 if not form_is_defined or len(form_is_defined) == 3:
-	print ("<head><title>Trabalho 1 de Redes</title></head>")
+	init_HTML_head_tag(0)
 	print ("""<p>Selecione os comandos que deseja e digite seus respectivos argumentos para cada computador</p>
 			<form name="commands" action="webserver.py" method="post">""")
 	for i in range(0,nr_PCs):
@@ -46,6 +59,7 @@ if not form_is_defined or len(form_is_defined) == 3:
 			<button type="submit" value="Submit">Enviar</button>
 			</form>""")
 else:
+	init_HTML_head_tag(1)
 	#ENVIAR COMANDOS AS MAQUINAS LIGADAS
 	print ("""<br/>
 			<form name="commands" action="webserver.py" method="post">
