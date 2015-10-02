@@ -2,7 +2,7 @@
 
 import cgi
 import string
-from HTMLParser import HTMLParser
+import html.parser
 
 def getName(i):
 	return "PC" + str(i);
@@ -28,7 +28,7 @@ def getSubForm(i):
 	html = html.replace('PC_NAME',getName(i))
 	return html
 
-print "Content-type: text/html\n\n"
+print ("Content-type: text/html\n\n")
 
 #PERGUNTAR AO BACKEND QUANTOS COMPUTADORES ESTAO LIGADOS
 nr_PCs = 3
@@ -37,22 +37,22 @@ nr_PCs = 3
 form = cgi.FieldStorage()
 form_is_defined = form.keys()
 if not form_is_defined or len(form_is_defined) == 3:
-	print "<head><title>Trabalho 1 de Redes</title></head>"
-	print """<p>Selecione os comandos que deseja e digite seus respectivos argumentos para cada computador</p>
-			<form name="commands" action="webserver.py" method="post">"""
+	print ("<head><title>Trabalho 1 de Redes</title></head>")
+	print ("""<p>Selecione os comandos que deseja e digite seus respectivos argumentos para cada computador</p>
+			<form name="commands" action="webserver.py" method="post">""")
 	for i in range(0,nr_PCs):
-		print getSubForm(i+1)
-	print """<button type="reset" value="Reset">Limpar tudo</button>
+		print (getSubForm(i+1))
+	print ("""<button type="reset" value="Reset">Limpar tudo</button>
 			<button type="submit" value="Submit">Enviar</button>
-			</form>"""
+			</form>""")
 else:
 	#ENVIAR COMANDOS AS MAQUINAS LIGADAS
-	print """<br/>
+	print ("""<br/>
 			<form name="commands" action="webserver.py" method="post">
 			<button type="submit" value="Submit">Voltar ao Inicio</button>
-			</form>"""
+			</form>""")
 
 #DEBUG - CHAVES DEFINIDAS
-print form_is_defined
+print (form_is_defined)
 
 
