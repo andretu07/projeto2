@@ -35,21 +35,21 @@ def parse_and_execute(sentence):
 			comando = comando.replace(' ',' -',1)
 			comando = comando.split(None, 2)
 			if(len(comando) == 2):
-				print "DAEMON processed " + comando[0] + " " + comando[1]
+				print ("DAEMON processou:",comando[0], comando[1])
 			else:
-				print "DAEMON processed " + comando[0]
+				print ("DAEMON processou:",comando[0])
 			try:
-				saida = subprocess.check_output(comando[0:2])
+				saida = subprocess.check_output(comando[0:2]).decode()
 			except subprocess.CalledProcessError:
 				operacao = "0"
-				return '\n'
+				return "\n"
 			return saida
 		else:
 			operacao = "0"
-			return '\n'
+			return "\n"
 	else:
 		operacao = "0"
-		return '\n'
+		return "\n"
 
 def cleanStr(stringUser):
 	erro = len(stringUser)
@@ -76,21 +76,24 @@ def threadfunction(connectionSocket):
 	connectionSocket.settimeout(60)
 	try:
 		while 1:
-			sentence = connectionSocket.recv(4096)
-			print "Daemon received " + sentence
+			sentence = connectionSocket.recv(4096).decode()
+			print ("Daemon recebeu:", sentence)
 			comando_executado = parse_and_execute(sentence)
-			msgfinal = "RESPOND " + operacao + comando_executado.decode()
+			msgfinal = "RESPOND " + operacao + comando_executado
 			connectionSocket.send(msgfinal.encode())
-	except error, timeout:
+	except timeout:
 		connectionSocket.close()
 
 #main
-
 daemonPort = 12000
 daemonSocket = socket(AF_INET,SOCK_STREAM)
-daemonSocket.bind(('',daemonPort))
+try:
+	daemonSocket.bind(('',daemonPort))
+except:
+	print("Porta Ocupada. Espere um momento ou tente outra porta.")
+	exit(0)
 daemonSocket.listen(1)
-print "DAEMON is ready to receive at host " + str(daemonSocket.getsockname()[0]) + " and Port " + str(daemonSocket.getsockname()[1])
+print ("DAEMON está pronto para uso.")
 while 1:
 	connectionSocket, addr = daemonSocket.accept()
 	#inicio da thread
