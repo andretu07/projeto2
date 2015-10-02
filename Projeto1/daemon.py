@@ -30,9 +30,9 @@ def parse_and_execute(sentence):
 		if(saidaValida):
 			comando = cleanStr(comando)
 			comando = comando.replace(' ',' -',1)
-			comando = comando.split()
-			print comando
-			saida = subprocess.check_output(comando)
+			comando = comando.split(None, 2)
+			print "DAEMON processed " + comando[0] + " " + comando[1]
+			saida = subprocess.check_output(comando[0:2])
 			return saida
 		else:
 			return ''
@@ -42,29 +42,31 @@ def parse_and_execute(sentence):
 
 def cleanStr(stringUser):
 	erro = len(stringUser)
+	outro_erro = stringUser.find(';')
+	if(outro_erro > 0):
+		erro = min(erro,outro_erro)
+	outro_erro = stringUser.find('&')
+	if(outro_erro > 0):
+		erro = min(erro,outro_erro)
+	outro_erro = stringUser.find('|')
+	if(outro_erro > 0):
+		erro = min(erro,outro_erro)
 	outro_erro = stringUser.find('>')
 	if(outro_erro > 0):
 		erro = min(erro,outro_erro)
 	outro_erro = stringUser.find('<')
 	if(outro_erro > 0):
 		erro = min(erro,outro_erro)
-	outro_erro = stringUser.find('|')
-	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
-	outro_erro = stringUser.find('&')
-	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
-	outro_erro = stringUser.find(';')
-	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
+
+
 	return stringUser[0:erro]
 
 def threadfunction(connectionSocket):	
-	connectionSocket.settimeout(21)
+	connectionSocket.settimeout(60)
 	try:
 		while 1:
 			sentence = connectionSocket.recv(10000)
-			print sentence
+			print "Daemon received " + sentence
 			comando_executado = parse_and_execute(sentence)
 			msgfinal = "RESPOND " + operacao + comando_executado.decode()
 			connectionSocket.send(msgfinal.encode())
@@ -76,14 +78,13 @@ from socket import *
 import threading
 import subprocess
 
-serverPort = 12000
-serverSocket = socket(AF_INET,SOCK_STREAM)
-serverSocket.bind(('',serverPort))
-serverSocket.listen(1)
-#serverSocket.settimeout(60)
-print ("The server is ready to receive")
+daemonPort = 12000
+daemonSocket = socket(AF_INET,SOCK_STREAM)
+daemonSocket.bind(('',daemonPort))
+daemonSocket.listen(1)
+print "DAEMON is ready to receive at host " + str(daemonSocket.getsockname()[0]) + " and Port " + str(daemonSocket.getsockname()[1])
 while 1:
-	connectionSocket, addr = serverSocket.accept()
+	connectionSocket, addr = daemonSocket.accept()
 	#inicio da thread
 	t = threading.Thread(target=threadfunction, args=(connectionSocket, ))
 	t.daemon = True
