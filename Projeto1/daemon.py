@@ -1,4 +1,4 @@
-from socket import *
+﻿from socket import *
 import threading
 import subprocess
 
@@ -79,7 +79,7 @@ def threadfunction(connectionSocket):
 			sentence = connectionSocket.recv(4096).decode()
 			print ("Daemon recebeu:", sentence)
 			comando_executado = parse_and_execute(sentence)
-			msgfinal = "RESPOND " + operacao + comando_executado
+			msgfinal = "RESPONSE " + operacao + comando_executado
 			connectionSocket.send(msgfinal.encode())
 	except timeout:
 		connectionSocket.close()
