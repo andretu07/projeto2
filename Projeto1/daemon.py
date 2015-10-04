@@ -5,9 +5,19 @@ import subprocess
 operacao = ""
 
 '''
-Funcao executestr(checkstr)
-'''
+Função executestr(checkstr)
+Faz o parse da string recebida e executa o comando do linux referente ao
+comando que deseja executar.
 
+Quando o backend envia uma string sem o Requestno começo, a função retorna
+quebra-linha
+
+Quando o backend envia uma string sem o número correspondente do comando,
+a função retorna quebra-linha
+
+Quando ocorre a exceção CalledProcessError, a função retorna quebra-linha
+
+'''
 def parse_and_execute(sentence):
 	global operacao
 
@@ -50,7 +60,11 @@ def parse_and_execute(sentence):
 	else:
 		operacao = "0"
 		return "\n"
-
+'''
+Função cleanStr(stringUser)
+Devolve uma fatia da string na qual não tem os caracteres não desejados (; & | > <) do
+começo dela até uma posição anterior do caracter. 
+'''
 def cleanStr(stringUser):
 	erro = len(stringUser)
 	outro_erro = stringUser.find(';')
@@ -68,10 +82,15 @@ def cleanStr(stringUser):
 	outro_erro = stringUser.find('<')
 	if(outro_erro > 0):
 		erro = min(erro,outro_erro)
-
-
 	return stringUser[0:erro]
 
+'''
+Função threadfunction(connectionSocket)
+Função da thread que recebe a string do backend, faz um parse, executa
+o comando requisitado e envia de volta ao backend.
+
+Fecha a conexão do socket após 60 segundos de conexão aberta. 
+'''
 def threadfunction(connectionSocket):	
 	connectionSocket.settimeout(60)
 	try:
@@ -84,7 +103,7 @@ def threadfunction(connectionSocket):
 	except timeout:
 		connectionSocket.close()
 
-#main
+#Main - preparação do server
 daemonPort = 12000
 daemonSocket = socket(AF_INET,SOCK_STREAM)
 daemonSocket.bind(('',daemonPort))
@@ -93,7 +112,7 @@ daemonSocket.listen(1)
 print ("DAEMON está pronto para uso.")
 while 1:
 	connectionSocket, addr = daemonSocket.accept()
-	#inicio da thread
+	#inicio da thread - para receber multi-usuários
 	t = threading.Thread(target=threadfunction, args=(connectionSocket, ))
 	t.daemon = True
 	t.start()
