@@ -3,6 +3,7 @@
 import cgi
 import string
 import html.parser
+import backend
 
 def init_HTML_headers():
 	print ("Content-type: text/html\n\n")
@@ -42,24 +43,35 @@ def getSubForm(i):
 	return html
 
 def getCommand(i):
-	return str(i)
+	if (i == 1):
+		return "ps"
+	elif (i == 2):
+		return "df"
+	elif (i == 3):
+		return "finger"
+	elif (i == 4):
+		return "uptime"
 
 def create_backend_message(nr_PCs):
 	global form
 	message = ""
 
 	for i in range(1,nr_PCs+1):
-		message = message + getName(i) + " ";
+		message = message + getName(i) + "\t";
 		for j in range(1,5):
 			key = getName(i) + "_cmd" + str(j)
 			if(key in form):
-				message = message + getCommand(j) + " "
+				message = message + getCommand(j) 
 				key = getName(i) + "_cmd" + str(j) + "_args"
 				if(key in form):
-					message = message + form.getvalue(key) + " "
-		message = message + "\n"
+					message = message + " " + form.getvalue(key) + "\t"
+				else:
+					message = message + "\t"
+		message = message[0:len(message)-1]
+		if(i != nr_PCs):
+			message = message + "\n"
+	return message
 
-	print(message)
 
 
 init_HTML_headers()
@@ -81,13 +93,14 @@ if not form_is_defined or len(form_is_defined) == 3:
 			</form>""")
 else:
 	init_HTML_head_tag(1)
-	create_backend_message(nr_PCs)
+	message = create_backend_message(nr_PCs)
+	message = backend.backend_func(message).replaceAll("\n","</br>")
+	for i in range(0,nr_PCs):
+		print(message[8:i])
 	print ("""<br/>
 			<form name="commands" action="webserver.py" method="post">
 			<button type="submit" value="Submit">Voltar ao Inicio</button>
 			</form>""")
 
-#DEBUG - CHAVES DEFINIDAS
-print (form_is_defined)
 
 
