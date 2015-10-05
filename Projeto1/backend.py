@@ -17,15 +17,16 @@ def backend_func(s):
     @returns: lista contendo a resposta dos daemons no formato e.g. ['PC1 \n cmd1 \n cmd2 \n', 'PC2 \n cmd1', 'PC3 \n cmd2']      
     """    
     s = s.split('\n')    #s = ['PC1\tps -ef\tdf -d\tfinger\tuptime', 'PC2\tuptime', 'PC3\tfinger']    
-    reply = []
+    reply = [None] * 3
+    tcp = [None] * 3
     for i in range(0, len(s)):  #para cada daemon, de 0 até o numero total de daemons
         cmds_daemon_atual = s[i].split('\t') #divide por comandos (para cada daemon em execução) e.g. cmd_atual[0] = ['PC1', 'ps -ef', 'df -d', 'finger', 'uptime']
         daemon_atual = cmds_daemon_atual[0] # armazena pc atual (string 'PC1', 'PC2' ou 'PC3')
         cmds_daemon_atual.pop(0) #remove a string pc atual da lista para facilitar
 
-        tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #conecta com o daemon
+        tcp[i] = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #conecta com o daemon
         dest = (get_daemon_ip(daemon_atual), _port) #define o ip de acordo com o numero do pc (daemon executando)        
-        tcp.connect(dest) #handshake com o daemon
+        tcp[i].connect(dest) #handshake com o daemon
 
         req = ''       
         resp = ''       
@@ -42,13 +43,13 @@ def backend_func(s):
             elif cmd_atual.startswith('uptime'):
                 cmd_atual = cmd_atual.replace('uptime', '4')                
 
-            cmd_atual = cmd_atual.replace('-', '') #remove os hifens dos parametros
             req = 'REQUEST ' + cmd_atual #e.g. "REQUEST 1 ef"
 
-            tcp.send (req.encode()) #envia a string pronta atraves do socket
-            reply.append(daemon_atual + '\n' + tcp.recv(4096).decode() + '\n') #recebe e decodifica a string
+            tcp[i].send (req.encode()) #envia a string pronta atraves do socket
+            message = tcp[i].recv(1024*1024).decode()
+            reply[i] = message #recebe e decodifica a string
 
-        tcp.close() #encerra a conexão com o daemon
+        #tcp.close() #encerra a conexão com o daemon
         
     return reply
 
@@ -64,6 +65,6 @@ def get_daemon_ip(daemon_atual):
     elif daemon_atual == 'PC2': return _pc2
     elif daemon_atual == 'PC3': return _pc3    
 
-#a = 'PC1\tps -ef\tuptime\nPC2\tuptime\nPC3\tfinger'
+a = 'PC1\tps a\tuptime\nPC2\tuptime\nPC3\tfinger'
 #b = 'PC1\tuptime\nPC2\tps'
-#print(backend_func(a))
+backend_func(a)
