@@ -42,7 +42,6 @@ def parse_and_execute(sentence):
 
 		if(saidaValida):
 			comando = cleanStr(comando)
-			comando = comando.replace(' ',' -',1)
 			comando = comando.split(None, 2)
 			if(len(comando) == 2):
 				print ("DAEMON processou:",comando[0], comando[1])
