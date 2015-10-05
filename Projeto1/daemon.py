@@ -95,13 +95,18 @@ def threadfunction(connectionSocket):
 	connectionSocket.settimeout(60)
 	try:
 		while 1:
-			sentence = connectionSocket.recv(4096).decode()
+			sentence = connectionSocket.recv(1024).decode()
+			if (len(sentence) == 0):
+				return
 			print ("Daemon recebeu:", sentence)
 			comando_executado = parse_and_execute(sentence)
-			msgfinal = "RESPONSE " + operacao + comando_executado
+			msgfinal = str("RESPONSE " + operacao + comando_executado)
 			connectionSocket.send(msgfinal.encode())
 	except timeout:
 		connectionSocket.close()
+	except:
+		print("")
+
 
 #Main - preparação do server
 daemonPort = 12000
