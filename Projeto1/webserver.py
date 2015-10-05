@@ -72,6 +72,19 @@ def create_backend_message(nr_PCs):
 			message = message + "\n"
 	return message
 
+def parse_backend_message(nr_PCs, message):
+	global form
+	print("<pre>")
+	m = 0
+	for i in range(1,nr_PCs+1):
+		print ("Resultados do " + getName(i) + "<br/>")
+		for j in range(1,5):
+			key = getName(i) + "_cmd" + str(j)
+			if(key in form):
+				print (message[m][11:] + "<br/>")
+				m=m+1
+	print("</pre>")
+
 
 
 init_HTML_headers()
@@ -94,9 +107,8 @@ if not form_is_defined or len(form_is_defined) == 3:
 else:
 	init_HTML_head_tag(1)
 	message = create_backend_message(nr_PCs)
-	message = backend.backend_func(message).replaceAll("\n","</br>")
-	for i in range(0,nr_PCs):
-		print(message[8:i])
+	message = backend.backend_func(message)
+	parse_backend_message(nr_PCs, message)
 	print ("""<br/>
 			<form name="commands" action="webserver.py" method="post">
 			<button type="submit" value="Submit">Voltar ao Inicio</button>

@@ -48,7 +48,6 @@ def backend_func(s):
             #envia a string pronta atraves do socket
             tcp[i].send (req.encode()) 
             reply.append(tcp[i].recv(16*1024).decode())
-            print(reply)
 
         tcp[i].close() #encerra a conexão com o daemon
     
