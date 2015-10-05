@@ -51,14 +51,14 @@ def parse_and_execute(sentence):
 				saida = subprocess.check_output(comando[0:2]).decode()
 			except subprocess.CalledProcessError:
 				operacao = "0"
-				return "\n"
+				return "O comando não pôde ser executado."
 			return saida
 		else:
 			operacao = "0"
-			return "\n"
+			return "O número do comando é inválido."
 	else:
 		operacao = "0"
-		return "\n"
+		return "A requisição não está no formato adequado"
 '''
 Função cleanStr(stringUser)
 Devolve uma fatia da string na qual não tem os caracteres não desejados (; & | > <) do
