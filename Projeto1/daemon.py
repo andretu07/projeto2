@@ -67,26 +67,20 @@ def cleanStr(stringUser):
 	erro = len(stringUser)
 	outro_erro = stringUser.find(';')
 	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
+		stringUser = stringUser[0:erro]
 	outro_erro = stringUser.find('&')
 	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
+		stringUser = stringUser[0:erro]
 	outro_erro = stringUser.find('|')
 	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
+		stringUser = stringUser[0:erro]
 	outro_erro = stringUser.find('>')
 	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
+		stringUser = stringUser[0:erro]
 	outro_erro = stringUser.find('<')
 	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
-	outro_erro = stringUser.find('\r')
-	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
-	outro_erro = stringUser.find('\n')
-	if(outro_erro > 0):
-		erro = min(erro,outro_erro)
-	return stringUser[0:erro]
+		stringUser = stringUser[0:erro]
+	return stringUser
 
 '''
 Função threadfunction(connectionSocket)
@@ -99,16 +93,16 @@ def threadfunction(connectionSocket):
 	connectionSocket.settimeout(60)
 	try:
 		while 1:
-			sentence = connectionSocket.recv(1024).decode()
+			sentence = connectionSocket.recv(1024).decode().replace("\r\n", "")
 			if (len(sentence) == 0):
 				return
-			print ("Daemon recebeu:", sentence.replace("\r\n", ""))
+			print ("Daemon recebeu:", sentence)
 			comando_executado = parse_and_execute(sentence)
 			msgfinal = str("RESPONSE " + operacao + comando_executado)
 			connectionSocket.send(msgfinal.encode())
 	except timeout:
 		connectionSocket.close()
-	#Erro na decodificação do unicode ou outros erros
+	#Erro na decodificação do unicode. Ignorar.
 	except:
 		None
 
