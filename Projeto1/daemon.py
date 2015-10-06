@@ -1,6 +1,6 @@
-﻿from socket import *
-import threading
-import subprocess
+﻿import threading
+from socket import *
+from subprocess import *
 
 operacao = ""
 
@@ -15,13 +15,13 @@ quebra-linha
 Quando o backend envia uma string sem o número correspondente do comando,
 a função retorna quebra-linha
 
-Quando ocorre a exceção CalledProcessError, a função retorna quebra-linha
+Se o programa não consegue executar o comando, gera uma exceção e retorna erro.
 
 '''
 def parse_and_execute(sentence):
 	global operacao
 
-	if (sentence[0:7] == "REQUEST"):
+	if (len(sentence) > 7 and sentence[0:7] == "REQUEST"):
 		saidaValida = True
 		comando = sentence[8:]
 
@@ -42,23 +42,22 @@ def parse_and_execute(sentence):
 
 		if(saidaValida):
 			comando = cleanStr(comando)
-			comando = comando.split(None, 2)
-			if(len(comando) == 2):
-				print ("DAEMON processou:",comando[0], comando[1])
-			else:
-				print ("DAEMON processou:",comando[0])
+			comando = comando.split()
+			print ("DAEMON processou:",comando);
 			try:
-				saida = subprocess.check_output(comando[0:2]).decode()
-			except subprocess.CalledProcessError:
-				operacao = "0"
-				return "O comando não pôde ser executado."
+				proc = Popen(comando, stdout=PIPE, stderr=PIPE)
+				out, err = proc.communicate()
+				saida = (out + err).decode()
+			except:
+				operacao = "0 "
+				saida = "O comando não pôde ser executado.\n"
 			return saida
 		else:
-			operacao = "0"
-			return "O número do comando é inválido."
+			operacao = "0 "
+			return "O número do comando é inválido.\n"
 	else:
-		operacao = "0"
-		return "A requisição não está no formato adequado"
+		operacao = "0 "
+		return "A requisição não está no formato adequado.\n"
 '''
 Função cleanStr(stringUser)
 Devolve uma fatia da string na qual não tem os caracteres não desejados (; & | > <) do
@@ -81,6 +80,12 @@ def cleanStr(stringUser):
 	outro_erro = stringUser.find('<')
 	if(outro_erro > 0):
 		erro = min(erro,outro_erro)
+	outro_erro = stringUser.find('\r')
+	if(outro_erro > 0):
+		erro = min(erro,outro_erro)
+	outro_erro = stringUser.find('\n')
+	if(outro_erro > 0):
+		erro = min(erro,outro_erro)
 	return stringUser[0:erro]
 
 '''
@@ -97,15 +102,15 @@ def threadfunction(connectionSocket):
 			sentence = connectionSocket.recv(1024).decode()
 			if (len(sentence) == 0):
 				return
-			print ("Daemon recebeu:", sentence)
+			print ("Daemon recebeu:", sentence.replace("\r\n", ""))
 			comando_executado = parse_and_execute(sentence)
 			msgfinal = str("RESPONSE " + operacao + comando_executado)
 			connectionSocket.send(msgfinal.encode())
 	except timeout:
 		connectionSocket.close()
+	#Erro na decodificação do unicode ou outros erros
 	except:
-		print("")
-
+		None
 
 #Main - preparação do server
 daemonPort = 12000
