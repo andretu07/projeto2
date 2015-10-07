@@ -9,8 +9,8 @@ NR_PCS = 3
 
 # ips das maquinas
 IPS = [None] * NR_PCS
-IPS[0] = "192.168.0.103"
-IPS[1] = "192.168.0.103"
+IPS[0] = "192.168.0.101"
+IPS[1] = "192.168.0.102"
 IPS[2] = "192.168.0.103"
 
 # porta
@@ -24,7 +24,7 @@ def send_requests(s):
     """  
     s = s.split('\n')    #s = ['PC1\tps -ef\tdf -d\tfinger\tuptime', 'PC2\tuptime', 'PC3\tfinger']    
     reply = []
-    tcp = [None] * 3
+    tcp = [None] * NR_PCS
     for i in range(0, len(s)):  #para cada daemon, de 0 até o numero total de daemons
         cmds_daemon_atual = s[i].split('\t') #divide por comandos (para cada daemon em execução) e.g. cmd_atual[0] = ['PC1', 'ps -ef', 'df -d', 'finger', 'uptime']
         daemon_atual = cmds_daemon_atual[0] # armazena pc atual (string 'PC1', 'PC2' ou 'PC3')

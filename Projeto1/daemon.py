@@ -14,13 +14,13 @@ Função executestr(checkstr)
 Faz o parse da string recebida e executa o comando do linux referente ao
 comando que deseja executar.
 
-Quando o backend envia uma string sem o Requestno começo, a função retorna
-quebra-linha
+A função verifica se a string começa com REQUEST, substitui o número pelo
+comando e verifica os parâmetros do comando que chegaram. Em seguida, executa
+e retorna a saída em uma mensagem RESPONSE com o mesmo número de comando.
 
-Quando o backend envia uma string sem o número correspondente do comando,
-a função retorna quebra-linha
-
-Se o programa não consegue executar o comando, gera uma exceção e retorna erro.
+Se a string não começa com REQUEST, o comando não pode ser executado 
+ou um número de comando inválido, retorna um RESPONSE 0 com uma 
+mensagem de erro.
 
 '''
 def parse_and_execute(sentence):
@@ -91,7 +91,9 @@ Função threadfunction(connectionSocket)
 Função da thread que recebe a string do backend, faz um parse, executa
 o comando requisitado e envia de volta ao backend.
 
-Fecha a conexão do socket após 60 segundos de conexão aberta. 
+Fecha a conexão do socket após 60 segundos de conexão aberta
+para evitar que uma thread fique rodando infinitamente.
+Note que uma thread é criada por requisição recebida.
 '''
 def threadfunction(connectionSocket):	
 	connectionSocket.settimeout(60)
@@ -110,12 +112,21 @@ def threadfunction(connectionSocket):
 	except:
 		None
 
-#Main - preparação do server
+"""
+Fluxo inicial do programa
+
+Inicializa um socket para escutar a porta 12000.
+Cria uma thread para cada requisição que recebe.
+
+É assumido que nosso daemon sempre executa na porta 12000
+"""
+
 daemonPort = 12000
 daemonSocket = socket(AF_INET,SOCK_STREAM)
 daemonSocket.bind(('',daemonPort))
 daemonSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
 daemonSocket.listen(1)
+
 print ("DAEMON está pronto para uso.")
 while 1:
 	connectionSocket, addr = daemonSocket.accept()
