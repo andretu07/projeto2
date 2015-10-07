@@ -1,3 +1,8 @@
+"""
+    @author: Arieh Fabbro, Camilo Moreira, Cristian Pendenza
+    @lastmod: 06/10/2015
+"""
+
 import socket
 
 NR_PCS = 3
@@ -15,8 +20,6 @@ def send_requests(s):
     """
     @obj: executar a função do backend; recebe a string do webserver na forma 'PC1\tps -ef\tuptime\nPC2\tuptime\nPC3\tfinger', envia para o(s) Daemons, recebe a resposta e retorna para o webserver
     @params: String 's' (\n separa os computadores que estarão executando o Daemon; \t separa os comandos por Daemon em execução)
-    @lastmod: 04/10/2015
-    @author: Cristian Pendenza
     @returns: lista contendo a resposta dos daemons no formato e.g. ['PC1 \n cmd1 \n cmd2 \n', 'PC2 \n cmd1', 'PC3 \n cmd2']      
     """  
     s = s.split('\n')    #s = ['PC1\tps -ef\tdf -d\tfinger\tuptime', 'PC2\tuptime', 'PC3\tfinger']    

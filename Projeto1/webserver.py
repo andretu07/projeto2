@@ -1,5 +1,10 @@
 #!/usr/bin/python3
 
+"""
+    @author: Arieh Fabbro, Camilo Moreira, Cristian Pendenza
+    @lastmod: 06/10/2015
+"""
+
 import cgi
 import string
 import html.parser
@@ -84,8 +89,6 @@ def parse_backend_message(message):
 				print (message[m][11:] + "<br/>")
 				m=m+1
 	print("</pre>")
-
-
 
 init_HTML_headers()
 

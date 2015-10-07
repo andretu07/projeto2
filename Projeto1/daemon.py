@@ -2,6 +2,11 @@
 from socket import *
 from subprocess import *
 
+"""
+    @author: Arieh Fabbro, Camilo Moreira, Cristian Pendenza
+    @lastmod: 06/10/2015
+"""
+
 operacao = ""
 
 '''
