@@ -64,21 +64,20 @@ Devolve uma fatia da string na qual não tem os caracteres não desejados (; & |
 começo dela até uma posição anterior do caracter. 
 '''
 def cleanStr(stringUser):
-	erro = len(stringUser)
-	outro_erro = stringUser.find(';')
-	if(outro_erro > 0):
+	erro = stringUser.find(';')
+	if(erro > 0):
 		stringUser = stringUser[0:erro]
-	outro_erro = stringUser.find('&')
-	if(outro_erro > 0):
+	erro = stringUser.find('&')
+	if(erro > 0):
 		stringUser = stringUser[0:erro]
-	outro_erro = stringUser.find('|')
-	if(outro_erro > 0):
+	erro = stringUser.find('|')
+	if(erro > 0):
 		stringUser = stringUser[0:erro]
-	outro_erro = stringUser.find('>')
-	if(outro_erro > 0):
+	erro = stringUser.find('>')
+	if(erro > 0):
 		stringUser = stringUser[0:erro]
-	outro_erro = stringUser.find('<')
-	if(outro_erro > 0):
+	erro = stringUser.find('<')
+	if(erro > 0):
 		stringUser = stringUser[0:erro]
 	return stringUser
 
