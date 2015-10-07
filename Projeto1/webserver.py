@@ -3,7 +3,7 @@
 import cgi
 import string
 import html.parser
-import backend
+from backend import NR_PCS, backend_func
 
 def init_HTML_headers():
 	print ("Content-type: text/html\n\n")
@@ -52,11 +52,11 @@ def getCommand(i):
 	elif (i == 4):
 		return "uptime"
 
-def create_backend_message(nr_PCs):
+def create_backend_message():
 	global form
 	message = ""
 
-	for i in range(1,nr_PCs+1):
+	for i in range(1,NR_PCS+1):
 		message = message + getName(i) + "\t";
 		for j in range(1,5):
 			key = getName(i) + "_cmd" + str(j)
@@ -68,15 +68,15 @@ def create_backend_message(nr_PCs):
 				else:
 					message = message + "\t"
 		message = message[0:len(message)-1]
-		if(i != nr_PCs):
+		if(i != NR_PCS):
 			message = message + "\n"
 	return message
 
-def parse_backend_message(nr_PCs, message):
+def parse_backend_message(message):
 	global form
 	print("<pre>")
 	m = 0
-	for i in range(1,nr_PCs+1):
+	for i in range(1,NR_PCS+1):
 		print ("Resultados do " + getName(i) + "<br/>")
 		for j in range(1,5):
 			key = getName(i) + "_cmd" + str(j)
@@ -89,9 +89,6 @@ def parse_backend_message(nr_PCs, message):
 
 init_HTML_headers()
 
-#PERGUNTAR AO BACKEND QUANTOS COMPUTADORES ESTAO LIGADOS
-nr_PCs = 3
-
 #First start
 form = cgi.FieldStorage()
 form_is_defined = form.keys()
@@ -99,16 +96,16 @@ if not form_is_defined or len(form_is_defined) == 3:
 	init_HTML_head_tag(0)
 	print ("""<p>Selecione os comandos que deseja e digite seus respectivos argumentos para cada computador</p>
 			<form name="commands" action="webserver.py" method="post">""")
-	for i in range(1,nr_PCs+1):
+	for i in range(1,NR_PCS+1):
 		print (getSubForm(i))
 	print ("""<button type="reset" value="Reset">Limpar tudo</button>
 			<button type="submit" value="Submit">Enviar</button>
 			</form>""")
 else:
 	init_HTML_head_tag(1)
-	message = create_backend_message(nr_PCs)
-	message = backend.backend_func(message)
-	parse_backend_message(nr_PCs, message)
+	message = create_backend_message()
+	message = backend_func(message)
+	parse_backend_message(message)
 	print ("""<br/>
 			<form name="commands" action="webserver.py" method="post">
 			<button type="submit" value="Submit">Voltar ao Inicio</button>
