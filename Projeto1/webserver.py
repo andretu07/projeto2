@@ -3,7 +3,7 @@
 import cgi
 import string
 import html.parser
-from backend import NR_PCS, backend_func
+from backend import NR_PCS, send_requests
 
 def init_HTML_headers():
 	print ("Content-type: text/html\n\n")
@@ -104,7 +104,7 @@ if not form_is_defined or len(form_is_defined) == 3:
 else:
 	init_HTML_head_tag(1)
 	message = create_backend_message()
-	message = backend_func(message)
+	message = send_requests(message)
 	parse_backend_message(message)
 	print ("""<br/>
 			<form name="commands" action="webserver.py" method="post">

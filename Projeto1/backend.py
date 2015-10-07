@@ -11,7 +11,7 @@ IPS[2] = "192.168.0.103"
 # porta
 _port = 12000
 
-def backend_func(s):
+def send_requests(s):
     """
     @obj: executar a função do backend; recebe a string do webserver na forma 'PC1\tps -ef\tuptime\nPC2\tuptime\nPC3\tfinger', envia para o(s) Daemons, recebe a resposta e retorna para o webserver
     @params: String 's' (\n separa os computadores que estarão executando o Daemon; \t separa os comandos por Daemon em execução)
@@ -52,7 +52,6 @@ def backend_func(s):
             reply.append(tcp[i].recv(1024*1024).decode())
 
         tcp[i].close() #encerra a conexão com o daemon
-    print(reply)
     return reply
 
 def get_daemon_ip(daemon_atual):
