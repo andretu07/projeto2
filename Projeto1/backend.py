@@ -1,9 +1,12 @@
 import socket
 
+NR_PCS = 3
+
 # ips das maquinas
-_pc1 = "192.168.0.103"
-_pc2 = "192.168.0.103"
-_pc3 = "192.168.0.103"
+IPS = [None] * NR_PCS
+IPS[0] = "192.168.0.103"
+IPS[1] = "192.168.0.103"
+IPS[2] = "192.168.0.103"
 
 # porta
 _port = 12000
@@ -15,7 +18,7 @@ def backend_func(s):
     @lastmod: 04/10/2015
     @author: Cristian Pendenza
     @returns: lista contendo a resposta dos daemons no formato e.g. ['PC1 \n cmd1 \n cmd2 \n', 'PC2 \n cmd1', 'PC3 \n cmd2']      
-    """    
+    """  
     s = s.split('\n')    #s = ['PC1\tps -ef\tdf -d\tfinger\tuptime', 'PC2\tuptime', 'PC3\tfinger']    
     reply = []
     tcp = [None] * 3
@@ -23,7 +26,6 @@ def backend_func(s):
         cmds_daemon_atual = s[i].split('\t') #divide por comandos (para cada daemon em execução) e.g. cmd_atual[0] = ['PC1', 'ps -ef', 'df -d', 'finger', 'uptime']
         daemon_atual = cmds_daemon_atual[0] # armazena pc atual (string 'PC1', 'PC2' ou 'PC3')
         cmds_daemon_atual.pop(0) #remove a string pc atual da lista para facilitar
-
         tcp[i] = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #conecta com o daemon
         dest = (get_daemon_ip(daemon_atual), _port) #define o ip de acordo com o numero do pc (daemon executando)        
         tcp[i].connect(dest) #handshake com o daemon
@@ -47,10 +49,10 @@ def backend_func(s):
 
             #envia a string pronta atraves do socket
             tcp[i].send (req.encode()) 
-            reply.append(tcp[i].recv(16*1024).decode())
+            reply.append(tcp[i].recv(1024*1024).decode())
 
         tcp[i].close() #encerra a conexão com o daemon
-    
+    print(reply)
     return reply
 
 def get_daemon_ip(daemon_atual):
@@ -61,11 +63,12 @@ def get_daemon_ip(daemon_atual):
     @author: Cristian Pendenza
     @returns: string com o ip destino 
     """
-    if daemon_atual == 'PC1': return _pc1
-    elif daemon_atual == 'PC2': return _pc2
-    elif daemon_atual == 'PC3': return _pc3    
+    if(daemon_atual[0:2] == 'PC'):
+        i = int(daemon_atual[2])
+        return IPS[i-1]
+    else:  
+        return None
 
 #a = 'PC1\tps a\tuptime\nPC2\tuptime\nPC3\tfinger'
 #a = 'PC1\tuptime\nPC2\tps'
 #print(backend_func(a))
-

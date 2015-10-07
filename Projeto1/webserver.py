@@ -113,6 +113,3 @@ else:
 			<form name="commands" action="webserver.py" method="post">
 			<button type="submit" value="Submit">Voltar ao Inicio</button>
 			</form>""")
-
-
-
