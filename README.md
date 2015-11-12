@@ -1,8 +1,8 @@
-# Trabalhos da Disciplina REDES - UFSCar
-
-Grupo: Arieh Fabbro, Camilo Moreira, Cristian Pendenza
+﻿# Trabalhos da Disciplina REDES - UFSCar
 
 #Primeiro trabalho de redes
+
+Grupo: Arieh Fabbro, Camilo Moreira, Cristian Pendenza
 
 O primeiro trabalho de redes permitir a um usuário realizar uma busca de resultados de comandos de linha, a partir de um conjunto de máquinas Linux, através de uma interface web.
 
@@ -22,4 +22,9 @@ Modo de Usar:
 
 4 - Entre na página Web que inseriu na página 1 e o projeto funcionará.<br/>
 
+#Segundo trabalho de redes
+
+Grupo
+Arieh Fabbro      RA 510360
+Cristian Pendenza RA 
 
