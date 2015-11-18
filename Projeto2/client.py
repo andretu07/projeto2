@@ -14,7 +14,11 @@ Sao eles:
 """
 
 def createPackage(seqNumber, ackNumber, checksum, finbit, data):
-  return "\n".join((str(seqNumber), str(ackNumber), str(checksum), str(finbit), data))
+	return "\n".join((str(seqNumber), str(ackNumber), str(checksum), str(finbit), data))
+
+def getFieldPackage(package, number):
+	field = package.split("\\n")
+	return field[number]
 
 #if len(sys.argv) != 4:
 #	print("python3 client.py <hostname_do_rementente> <numero_de_porta_do_rementente> <nome_do_arquivo>")
@@ -33,14 +37,17 @@ clientSocket = socket(AF_INET, SOCK_DGRAM)
 #nome do arquivo a receber
 message = createPackage(0, 0, 0, 0, "teste.txt")
 clientSocket.sendto(message.encode(),(serverName, serverPort))
-response = clientSocket.recvfrom(2048)
-if response[4].decode() == "200 OK":
+response = clientSocket.recvfrom(2048).decode()
+error = getFieldPackage(response, 4)
+if error == "200 OK":
 	response = clientSocket.recvfrom(2048)
-	while response[3] != 1:
-		arquivo.append(response[4])
-		message = createPackage(0, response[0]+len(message[4]), 0, 0, 0)
+	error = error = getFieldPackage(response, 3)
+	while error != 1:
+		arquivo.append(getFieldPackage(response, 4))
+		message = createPackage(0, getFieldPackage(response, 0)+len(getFieldPackage(response, 4)), 0, 0, 0)
 		clientSocket.sendto(message,(serverName, serverPort))
 		response = clientSocket.recvfrom(2048)
+		error = error = getFieldPackage(response, 3)
 	clientSocket.close()
 else:
 	print("Arquivo nao encontrado")
