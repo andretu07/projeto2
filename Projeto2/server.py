@@ -8,11 +8,12 @@ def Package(seqNumber, ackNumber, checksum, finbit, data):
  	
 serverName = 'localhost'
 serverPort = 12000
-clientSocket = socket(AF_INET, SOCK_DGRAM)
 
-test = Package(0,0,0,0,"ola mundo")
+serverSocket= socket(AF_INET, SOCK_DGRAM)
 
-clientSocket.sendto(test.encode(),(serverName, serverPort))
+msg = serverSocket.recvfrom(2048)
+print(msg)
+
 
 
 
