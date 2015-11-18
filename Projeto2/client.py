@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from socket import *
 import sys
 
@@ -11,14 +13,8 @@ Sao eles:
 5 campo: dados propriamente ditos
 """
 
-def createPackage(seqNumber, ackNumber, checksum, finbit, dados)
-	message = []
-	message.append(seqNumber)
-	message.append(ackNumber)
-	message.append(checksum)
-	message.append(finbit)
-	message.append(dados)
-	return message
+def createPackage(seqNumber, ackNumber, checksum, finbit, data):
+  return "\n".join((str(seqNumber), str(ackNumber), str(checksum), str(finbit), data))
 
 #if len(sys.argv) != 4:
 #	print("python3 client.py <hostname_do_rementente> <numero_de_porta_do_rementente> <nome_do_arquivo>")
@@ -27,6 +23,7 @@ def createPackage(seqNumber, ackNumber, checksum, finbit, dados)
 #	print (sys.argv[1]) # prints var1
 #	print (sys.argv[2]) # prints var2
 #	print (sys.argv[3]) # prints var3
+
 arquivo = []
 
 serverName = 'localhost'
@@ -34,8 +31,8 @@ serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_DGRAM)
 
 #nome do arquivo a receber
-message = createPackage(0, 0, 0, 0, "teste.txt".encode())
-clientSocket.sendto(message,(serverName, serverPort))
+message = createPackage(0, 0, 0, 0, "teste.txt")
+clientSocket.sendto(message.encode(),(serverName, serverPort))
 response = clientSocket.recvfrom(2048)
 if response[4].decode() == "200 OK":
 	response = clientSocket.recvfrom(2048)
