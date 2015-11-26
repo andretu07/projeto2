@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from socket import *
+import struct
 import sys
 
 """
@@ -14,10 +15,10 @@ Sao eles:
 """
 
 def createPackage(seqNumber, ackNumber, checksum, finbit, data):
-	return "\n".join((str(seqNumber), str(ackNumber), str(checksum), str(finbit), data))
+	return "+++".join((str(seqNumber), str(ackNumber), str(checksum), str(finbit), data))
 
 def getFieldPackage(package, number):
-	field = package.split("\\n")
+	field = package.split("+++")
 	return field[number]
 
 #if len(sys.argv) != 4:
@@ -37,17 +38,22 @@ clientSocket = socket(AF_INET, SOCK_DGRAM)
 #nome do arquivo a receber
 message = createPackage(0, 0, 0, 0, "teste.txt")
 clientSocket.sendto(message.encode(),(serverName, serverPort))
-response = clientSocket.recvfrom(2048).decode()
-error = getFieldPackage(response, 4)
+response, clientAddress = clientSocket.recvfrom(2048)
+error = getFieldPackage(response.decode(), 4)
 if error == "200 OK":
-	response = clientSocket.recvfrom(2048)
-	error = error = getFieldPackage(response, 3)
-	while error != 1:
-		arquivo.append(getFieldPackage(response, 4))
-		message = createPackage(0, getFieldPackage(response, 0)+len(getFieldPackage(response, 4)), 0, 0, 0)
-		clientSocket.sendto(message,(serverName, serverPort))
-		response = clientSocket.recvfrom(2048)
-		error = error = getFieldPackage(response, 3)
+	response, clientAddress = clientSocket.recvfrom(2048)
+	error = getFieldPackage(response.decode(), 3)
+	while int(error) != 1:
+		arquivo.append(getFieldPackage(response.decode(), 4))
+		message = createPackage(0, int(getFieldPackage(response.decode(), 0))+len(getFieldPackage(response.decode(), 4)), 0, 0, "nada")
+		clientSocket.sendto(message.encode(),(serverName, serverPort))
+		response, clientAddress = clientSocket.recvfrom(2048)
+		error = getFieldPackage(response.decode(), 3)
+	arquivo = "".join(arquivo)
+	with open("teste3.txt", 'wb') as f:
+		f.write(arquivo.encode("ISO-8859-1"))
+	print("Arquivo criado com sucesso!")
 	clientSocket.close()
 else:
 	print("Arquivo nao encontrado")
+	clientSocket.close()
