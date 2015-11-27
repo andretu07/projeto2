@@ -7,15 +7,14 @@ import sys
 """
 Cada pacote eh uma lista com os varios campos do protocolo TCP
 Sao eles:
-1 campo: sequence number
-2 campo: ack number
+1 campo: sequence number(server)/ack number(client)
 3 campo: checksum
 4 campo: finbit - determina se ha dados para enviar (1 para dizer que ha)
 5 campo: dados propriamente ditos
 """
 
-def createPackage(seqNumber, ackNumber, checksum, finbit, data):
-	return "+++".join((str(seqNumber), str(ackNumber), str(checksum), str(finbit), data))
+def createPackage(seqAckNumber, checksum, finbit, data):
+	return "+++".join((str(seqAckNumber), str(checksum), str(finbit), data))
 
 def getFieldPackage(package, number):
 	field = package.split("+++")
@@ -29,28 +28,55 @@ def getFieldPackage(package, number):
 #	print (sys.argv[2]) # prints var2
 #	print (sys.argv[3]) # prints var3
 
+
+"""
+N  = window size
+Rn = request number
+Sn = sequence number
+Sb = sequence base
+Sm = sequence max
+
+Receiver:
+Rn = 0
+Do the following forever:
+If the packet received = Rn and the packet is error free
+        Accept the packet and send it to a higher layer
+        Rn = Rn + 1
+        Send a Request for Rn
+Else
+        Refuse packet
+        Send a Request for Rn
+"""
+
 arquivo = []
 
 serverName = 'localhost'
 serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_DGRAM)
+requestNumber = 0
 
 #nome do arquivo a receber
-message = createPackage(0, 0, 0, 0, "teste.txt")
+#message = createPackage(requestNumber, 0, 0, "teste.txt")
+message = createPackage(requestNumber, 0, 0, "projeto2.pdf")
+print ("Pedido o pacote " + str(requestNumber))
 clientSocket.sendto(message.encode(),(serverName, serverPort))
 response, clientAddress = clientSocket.recvfrom(2048)
-error = getFieldPackage(response.decode(), 4)
+error = getFieldPackage(response.decode(), 3)
+stopError = getFieldPackage(response.decode(), 2)
 if error == "200 OK":
-	response, clientAddress = clientSocket.recvfrom(2048)
-	error = getFieldPackage(response.decode(), 3)
-	while int(error) != 1:
-		arquivo.append(getFieldPackage(response.decode(), 4))
-		message = createPackage(0, int(getFieldPackage(response.decode(), 0))+len(getFieldPackage(response.decode(), 4)), 0, 0, "nada")
-		clientSocket.sendto(message.encode(),(serverName, serverPort))
+	while int(stopError) != 1:
 		response, clientAddress = clientSocket.recvfrom(2048)
-		error = getFieldPackage(response.decode(), 3)
+		if requestNumber == int(getFieldPackage(response.decode(), 0)):
+			arquivo.append(getFieldPackage(response.decode(), 3))
+			print ("Recebido o pacote " + str(requestNumber))
+			requestNumber += 1
+			message = createPackage(requestNumber, 0, 0, "ada")
+			print ("Pedido o pacote " + str(requestNumber))
+			clientSocket.sendto(message.encode(),(serverName, serverPort))
+		stopError = getFieldPackage(response.decode(), 2)
 	arquivo = "".join(arquivo)
-	with open("teste3.txt", 'wb') as f:
+	#with open("teste3.txt", 'wb') as f:
+	with open("projeto3.pdf", 'wb') as f:
 		f.write(arquivo.encode("ISO-8859-1"))
 	print("Arquivo criado com sucesso!")
 	clientSocket.close()
