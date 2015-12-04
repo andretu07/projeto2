@@ -26,5 +26,5 @@ Modo de Usar:
 
 Grupo
 
-Arieh Fabbro      RA 510360
+Andre Uenishi, Arieh Fabbro, Edna Partricia Martins e Fernando Messias da Silva
 
