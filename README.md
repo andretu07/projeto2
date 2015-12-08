@@ -24,9 +24,7 @@ Modo de Usar:
 
 #Segundo trabalho de redes
 
-Grupo
-
-André Uenishi, Arieh Fabbro, Edna Partricia Martins e Fernando Messias da Silva
+Grupo: André Uenishi, Arieh Fabbro, Edna Partricia Martins e Fernando Messias da Silva
 
 Cada integrante teve a responsabilidade de fazer os seguintes trechos do programa:
 
