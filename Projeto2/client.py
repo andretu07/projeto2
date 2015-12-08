@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from socket import *
+import hashlib
 import struct
 import sys
 
@@ -20,6 +21,13 @@ def getFieldPackage(package, number):
 	field = package.split("+++")
 	return field[number]
 
+def checkChecksum(package):
+	arq = getFieldPackage(package, 3)
+	hash = hashlib.md5()
+	hash.update(arq.encode())
+	checksum = hash.hexdigest()
+	return checksum == getFieldPackage(package, 1)
+
 #if len(sys.argv) != 4:
 #	print("python3 client.py <hostname_do_rementente> <numero_de_porta_do_rementente> <nome_do_arquivo>")
 #else:
@@ -31,11 +39,10 @@ def getFieldPackage(package, number):
 
 """
 N  = window size
-Rn = request number
+Rn = request number - Qual numero de pacote que o cliente está solicitando ao servidor
 Sn = sequence number
 Sb = sequence base
 Sm = sequence max
-
 Receiver:
 Rn = 0
 Do the following forever:
@@ -66,13 +73,30 @@ stopError = getFieldPackage(response.decode(), 2)
 if error == "200 OK":
 	while int(stopError) != 1:
 		response, clientAddress = clientSocket.recvfrom(2048)
-		if requestNumber == int(getFieldPackage(response.decode(), 0)):
+		# Se o pacote é livre de erro então aceita o pacote e envia o número de pacote que o cliente está
+		# solicitando ao servidor.
+		if requestNumber == int(getFieldPackage(response.decode(), 0)) and checkChecksum(response.decode()):
 			arquivo.append(getFieldPackage(response.decode(), 3))
 			print ("Recebido o pacote " + str(requestNumber))
 			requestNumber += 1
 			message = createPackage(requestNumber, 0, 0, "ada")
 			print ("Pedido o pacote " + str(requestNumber))
-			clientSocket.sendto(message.encode(),(serverName, serverPort))
+			clientSocket.sendto(message.encode(),(serverName, serverPort)) # socket.sendto(string, address)
+
+			# Parte que faz o envio do ack para o servidor
+
+			#pega o sequenceNumber/Ack do pacote
+			sn = getFieldPackage(message, 1)
+			# Faz o envio do ack para o servidor
+			clientSocket.sendto(sn, (ServerName, serverPort))
+
+		# Se o pacote estiver corrompido recusar o pacote e envia uma nova solicitação ao servidor
+		else 
+			# Pacote estou corrompido, realiza uma nova solicitação ao servidor
+			print("pacote " + str(requestNumber + "corrompido"))
+			print("Enviando nova solicitação para RN......")
+			clientSocket.sendto(message.encode(), (serverName, serverPort))
+			print("Solicitação enviada")
 		stopError = getFieldPackage(response.decode(), 2)
 	arquivo = "".join(arquivo)
 	#with open("teste3.txt", 'wb') as f:
