@@ -91,7 +91,7 @@ if error == "200 OK":
 			clientSocket.sendto(sn, (ServerName, serverPort))
 
 		# Se o pacote estiver corrompido recusar o pacote e envia uma nova solicitação ao servidor
-		else 
+		else: 
 			# Pacote estou corrompido, realiza uma nova solicitação ao servidor
 			print("pacote " + str(requestNumber + "corrompido"))
 			print("Enviando nova solicitação para RN......")
