@@ -24,7 +24,16 @@ Modo de Usar:
 
 #Segundo trabalho de redes
 
-Grupo
+Grupo: André Uenishi, Arieh Fabbro, Edna Partricia Martins e Fernando Messias da Silva
 
-Andre Uenishi, Arieh Fabbro, Edna Partricia Martins e Fernando Messias da Silva
+Cada integrante teve a responsabilidade de fazer os seguintes trechos do programa:
 
+André Uenishi: Fazer o Go back N sem corrupção e sem perdas.
+
+Arieh Fabbro: Fazer a estrutura base, código de enviar e receber pacotes sem corrupção e perdas.
+
+Edna Patricia Martins: Fazer o código referente a perda dos pacotes depois do Go back N com corrupção ter sido feito.
+
+Fernando Messias da Silva: Fazer o código referente a corrupção dos pacotes depois do Go back N ter sido feito.
+
+O merge do projeto foi simples, o grupo do André, Edna e Fernando não tinha começado a fazer o trabalho e o Arieh já havia começado fizemos o merge colocando o que foi feito no trabalho do Arieh no novo grupo.
