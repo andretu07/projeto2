@@ -1,5 +1,7 @@
+import random
 #gerar numeros aleatorios que sejam menores a ou iguais a medida de chance ou "probabilidade" de um pacote ter sido perdido  
-def lotPack(prob_loss):
+# 
+def lostPack(prob_loss):
 
    global lostNum
    global pack_lost
