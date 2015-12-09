@@ -1,5 +1,6 @@
 import threading
 import time
+import random
 import hashlib
 from socket import *
 from subprocess import *
@@ -57,6 +58,9 @@ N = 6
 base = 0
 requestNumber = 0
 packages = []
+lostNum = []
+pack_lost = False
+prob_loss = 0.5
 
 serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_DGRAM)
