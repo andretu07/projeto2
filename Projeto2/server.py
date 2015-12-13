@@ -1,17 +1,40 @@
-import threading
+﻿import threading
 import time
-import random
 import hashlib
 from socket import *
 from subprocess import *
+import sys
 
+
+'''
+Função createPackage(seqAckNumber, checksum, finbit, data)
+Cria um pacote, separados cada campo por +++, com os seguintes campos:
+campo 1 - sequence number/ack Number
+campo 2 - checksum
+campo 3 - bit de final de arquivo
+campo 4 - dados do arquivo
+Retorna o pacote criado.
+'''
 def createPackage(seqAckNumber, checksum, finbit, data):
 	return "+++".join((str(seqAckNumber), str(checksum), str(finbit), data))
 
+'''
+Função getFieldPackage(package, number)
+Recupera os detalhes de um campo especifico de acordo com o numero para recuperacao
+0 para recuperar o sequence number/ack Number
+1 para recuperar o checksum
+2 para recuperar o bit de final de arquivo
+3 para recuperar os dados do arquivo
+Retorna os detalhes do campo requisitado.
+'''
 def getFieldPackage(package, number):
 	field = package.split("+++")
 	return field[number]
-# verificar se o cliente recebe o pacote com o checksum 
+
+'''
+Função generateChecksum(package)
+Gera o checksum dado o pacote, pegando o que possui no campo de dados e gerando o checksum e devolvendo o pacote com o checksum no seu campo devido.
+'''
 def generateChecksum(package):
 	arq = getFieldPackage(package, 3)
 	hash = hashlib.md5()
@@ -20,11 +43,11 @@ def generateChecksum(package):
 	package = createPackage(getFieldPackage(package, 0), checksum, getFieldPackage(package, 2), arq)
 	return package
 
-
-
-# timer a ser ser# 
-
-def listener(serverSocket):   # recebe os ack e verifica 
+'''
+Função listener(serverSocket)
+Thread responsavel pela parte de receber os pedidos do cliente. Nao foi implementada a parte de corrupcao e nem de perda de pacotes.
+'''
+def listener(serverSocket):
 	global requestNumber
 	global base
 	serverSocket.settimeout(60)
@@ -37,7 +60,11 @@ def listener(serverSocket):   # recebe os ack e verifica
 	#Erro na decodificação do unicode. Ignorar.
 	except:
 		None
-# que vai morrer se ela morrer ja deu o seu timer
+
+'''
+Função burst(serverSocket)
+Thread responsavel pela parte de enviar sua janela para o cliente no comeco da comunicacao. Nao foi implementado a parte da perda de pacotes com o Timer.
+'''
 def burst(serverSocket):
 	global base
 	global requestNumber
@@ -54,15 +81,18 @@ def burst(serverSocket):
 	except:
 		None
 
+#Variaveis responsaveis para a manipulacao no GobackN(Tamanho da janela, numbero base do GobackN, Numero do pacote a ser enviado e pacotes a serem enviados
 N = 6
 base = 0
 requestNumber = 0
 packages = []
-lostNum = []
-pack_lost = False
-prob_loss = 0.5
 
-serverPort = 12000
+'''
+Função Main
+Função que implementa as funcionalidades do Server. Primeiramente, o server pede a requisicao de envio de um arquivo. Tenta abri-lo, se o arquivo nao existir, o server envia uma mensagem de erro e nao envia mais nada, se o arquivo existir, inicia as duas threads, listener e burst, e  envia um OK ao cliente e comeca o envio do arquivo conforme o GobackN determina, enquanto a janela do GobackN nao chegar no limite, envia um pacote novo.
+'''
+serverPort = int(sys.argv[1])
+#serverPort = 12000
 serverSocket = socket(AF_INET, SOCK_DGRAM)
 serverSocket.bind(('', serverPort))
 print ("The server is ready to receive")
@@ -99,4 +129,4 @@ while 1:
 				requestNumber += 1
 		print("chega")
 		package = createPackage(0, 0, 1, "nada")
-		serverSocket.sendto(package.encode(), clientAddress) 
+		serverSocket.sendto(package.encode(), clientAddress)
