@@ -26,6 +26,8 @@ Modo de Usar:
 
 Grupo: André Uenishi, Arieh Fabbro, Edna Partricia Martins e Fernando Messias da Silva
 
+Programa feito no Python 3.
+
 Cada integrante teve a responsabilidade de fazer os seguintes trechos do programa:
 
 André Uenishi: Fazer o Go back N sem corrupção e sem perdas.
