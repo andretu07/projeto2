@@ -39,3 +39,7 @@ Edna Patricia Martins: Fazer o código referente a perda dos pacotes depois do G
 Fernando Messias da Silva: Fazer o código referente a corrupção dos pacotes depois do Go back N ter sido feito.
 
 O merge do projeto foi simples, o grupo do André, Edna e Fernando não tinha começado a fazer o trabalho e o Arieh já havia começado fizemos o merge colocando o que foi feito no trabalho do Arieh no novo grupo.
+
+COMO EXECUTAR:
+
+Executar o server com o parâmetro de porta, ex python3 server.py 12000, e logo em seguida, executar o cliente com os parâmetros de nome do servidor, número da porta e nome do arquivo que quer, por exemplo python3 client.py localhost 12000 projeto2.pdf
