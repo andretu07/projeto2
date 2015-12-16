@@ -1,69 +1,72 @@
 #!/usr/bin/python3
 
 from socket import *
-import hashlib
 import struct
 import sys
 
-'''
-Função createPackage(seqAckNumber, checksum, finbit, data)
-Cria um pacote, separados cada campo por +++, com os seguintes campos:
-campo 1 - sequence number/ack Number
-campo 2 - checksum
-campo 3 - bit de final de arquivo
-campo 4 - dados do arquivo
-Retorna o pacote criado.
-'''
+"""
+Cada pacote eh uma lista com os varios campos do protocolo TCP
+Sao eles:
+1 campo: sequence number(server)/ack number(client)
+3 campo: checksum
+4 campo: finbit - determina se ha dados para enviar (1 para dizer que ha)
+5 campo: dados propriamente ditos
+"""
+
 def createPackage(seqAckNumber, checksum, finbit, data):
 	return "+++".join((str(seqAckNumber), str(checksum), str(finbit), data))
 
-'''
-Função getFieldPackage(package, number)
-Recupera os detalhes de um campo especifico de acordo com o numero para recuperacao
-0 para recuperar o sequence number/ack Number
-1 para recuperar o checksum
-2 para recuperar o bit de final de arquivo
-3 para recuperar os dados do arquivo
-Retorna os detalhes do campo requisitado.
-'''
 def getFieldPackage(package, number):
 	field = package.split("+++")
 	return field[number]
 
-'''
-Função checkChecksum(package)
-Verifica se o campo do checksum eh igual ao checksum criado com os dados do pacote.
-'''
-def checkChecksum(package):
-	arq = getFieldPackage(package, 3)
-	hash = hashlib.md5()
-	hash.update(arq.encode())
-	checksum = hash.hexdigest()
-	return checksum == getFieldPackage(package, 1)
+#if len(sys.argv) != 4:
+#	print("python3 client.py <hostname_do_rementente> <numero_de_porta_do_rementente> <nome_do_arquivo>")
+#else:
+#	print (sys.argv[0]) # prints python_script.py
+#	print (sys.argv[1]) # prints var1
+#	print (sys.argv[2]) # prints var2
+#	print (sys.argv[3]) # prints var3
+
 
 """
-Funcao Main
-Cliente requisita um arquivo ao servidor com o primeira requisicao de pacote. Caso tenha o arquivo, espera a entrega do pacote requisitado e pede o proximo. Caso receba um pacote com o bit de fim de arquivo, o cliente encerra o programa escrevendo o arquivo requisitado em um arquivo na pasta do cliente. Possui um inicio de corrupcao de arquivo verificando o checksum do pacote recebido.
+N  = window size
+Rn = request number
+Sn = sequence number
+Sb = sequence base
+Sm = sequence max
+
+Receiver:
+Rn = 0
+Do the following forever:
+If the packet received = Rn and the packet is error free
+        Accept the packet and send it to a higher layer
+        Rn = Rn + 1
+        Send a Request for Rn
+Else
+        Refuse packet
+        Send a Request for Rn
 """
+
 arquivo = []
 
-serverName = sys.argv[1]
-serverPort = int(sys.argv[2])
+serverName = 'localhost'
+serverPort = 12000
 clientSocket = socket(AF_INET, SOCK_DGRAM)
 requestNumber = 0
 
 #nome do arquivo a receber
 #message = createPackage(requestNumber, 0, 0, "teste.txt")
-message = createPackage(requestNumber, 0, 0, sys.argv[3])
+message = createPackage(requestNumber, 0, 0, "projeto2.pdf")
+print ("Pedido o pacote " + str(requestNumber))
 clientSocket.sendto(message.encode(),(serverName, serverPort))
 response, clientAddress = clientSocket.recvfrom(2048)
 error = getFieldPackage(response.decode(), 3)
 stopError = getFieldPackage(response.decode(), 2)
 if error == "200 OK":
-	print ("Pedido o pacote " + str(requestNumber))
 	while int(stopError) != 1:
 		response, clientAddress = clientSocket.recvfrom(2048)
-		if requestNumber == int(getFieldPackage(response.decode(), 0)) and checkChecksum(response.decode()):
+		if requestNumber == int(getFieldPackage(response.decode(), 0)):
 			arquivo.append(getFieldPackage(response.decode(), 3))
 			print ("Recebido o pacote " + str(requestNumber))
 			requestNumber += 1
